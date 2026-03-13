@@ -9,6 +9,14 @@ FROM base AS dotnet-dev
 
 USER root
 
+ENV DOTNET_ROOT=/usr/share/dotnet
+ENV PATH=${PATH}:${DOTNET_ROOT}:${DOTNET_ROOT}/tools
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_NOLOGO=1
+ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+ENV NUGET_CLI_TELEMETRY_OPTOUT=1
+ENV POWERSHELL_TELEMETRY_OPTOUT=1
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     python3 \
@@ -60,14 +68,6 @@ RUN mkdir -p /usr/local/bin /usr/share/dotnet /tmp/dotnet-install \
     && if [ -d /home/${USERNAME}/.nuget ]; then chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nuget; fi \
     && if [ -d /home/${USERNAME}/.microsoft ]; then chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.microsoft; fi \
     && rm -rf /tmp/dotnet-install
-
-ENV DOTNET_ROOT=/usr/share/dotnet
-ENV PATH=${PATH}:${DOTNET_ROOT}:${DOTNET_ROOT}/tools
-ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
-ENV DOTNET_NOLOGO=1
-ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
-ENV NUGET_CLI_TELEMETRY_OPTOUT=1
-ENV POWERSHELL_TELEMETRY_OPTOUT=1
 
 FROM dotnet-dev AS project
 
