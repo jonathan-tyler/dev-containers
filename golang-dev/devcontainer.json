@@ -1,0 +1,30 @@
+{
+    "name": "${localWorkspaceFolderBasename}-dev",
+    "image": "localhost:5000/golang-dev:1.0.2",
+    "remoteUser": "developer",
+    "containerUser": "developer",
+    "updateRemoteUserUID": true,
+    "runArgs": [
+        "--name=${localWorkspaceFolderBasename}-dev",
+        "--userns=keep-id",
+        "--security-opt=no-new-privileges"
+    ],
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    "mounts": [
+        "type=bind,source=${localEnv:HOME}/.agents,target=${containerWorkspaceFolder}/.agents",
+        "type=bind,source=${localEnv:HOME}/yolo.settings.json,target=/home/developer/.vscode-server/data/Machine/settings.json",
+        // golang
+        "type=volume,source=golang-dev-cache,target=/home/developer/.cache",
+        "type=volume,source=golang-dev-go,target=/home/developer/go"
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "davidanson.vscode-markdownlint",
+                // golang
+                "golang.go"
+            ]
+        }
+    }
+}

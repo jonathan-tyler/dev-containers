@@ -1,0 +1,60 @@
+ARG DEV_BASE_TAG=1.0.3
+FROM localhost:5000/dev-base:${DEV_BASE_TAG} AS base
+
+ARG USERNAME=developer
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+FROM base AS sdk
+
+USER root
+
+ENV GO_VERSION=1.26.1
+ENV GOBIN=/usr/local/bin
+ENV GOTOOLCHAIN=local
+ENV PATH=/usr/local/go/bin:${PATH}
+ENV GOPLS_VERSION=v0.21.1
+ENV GOLANG_X_TOOLS_VERSION=v0.42.0
+ENV DELVE_VERSION=v1.26.1
+ENV STATICCHECK_VERSION=v0.7.0
+
+RUN apt-get update \
+    && arch="$(dpkg --print-architecture)" \
+    && case "$arch" in \
+    amd64) go_arch='amd64' ;; \
+    arm64) go_arch='arm64' ;; \
+    *) echo "Unsupported architecture: $arch" >&2; exit 1 ;; \
+    esac \
+    && curl -fsSL "https://go.dev/dl/go${GO_VERSION}.linux-${go_arch}.tar.gz" -o /tmp/go.tgz \
+    && rm -rf /usr/local/go \
+    && tar -C /usr/local -xzf /tmp/go.tgz \
+    && rm -f /tmp/go.tgz \
+    && go version \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /tmp/go-tools-mod \
+    && cd /tmp/go-tools-mod \
+    && go mod init go-tools-mod \
+    && printf '%s\n' \
+    'module go-tools-mod' \
+    '' \
+    'go 1.22' \
+    '' \
+    'require (' \
+    "  github.com/go-delve/delve ${DELVE_VERSION}" \
+    "  golang.org/x/tools/gopls ${GOPLS_VERSION}" \
+    "  golang.org/x/tools ${GOLANG_X_TOOLS_VERSION}" \
+    "  honnef.co/go/tools ${STATICCHECK_VERSION}" \
+    ')' \
+    > go.mod \
+    && go mod download \
+    && rm -rf /tmp/go-tools-mod
+
+RUN go install golang.org/x/tools/gopls@${GOPLS_VERSION} \
+    && go install golang.org/x/tools/cmd/goimports@${GOLANG_X_TOOLS_VERSION} \
+    && go install github.com/go-delve/delve/cmd/dlv@${DELVE_VERSION} \
+    && go install honnef.co/go/tools/cmd/staticcheck@${STATICCHECK_VERSION}
+
+FROM sdk AS project
+
+USER ${USERNAME}
