@@ -12,8 +12,8 @@
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
     "mounts": [
-        "type=bind,source=${localEnv:HOME}/.agents,target=${containerWorkspaceFolder}/.agents",
-        "type=bind,source=${localEnv:HOME}/yolo.settings.json,target=/home/developer/.vscode-server/data/Machine/settings.json",
+        // ~/my/kb
+        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
         // golang
         "type=volume,source=golang-dev-cache,target=/home/developer/.cache",
         "type=volume,source=golang-dev-go,target=/home/developer/go"

@@ -1,8 +1,8 @@
 {
-    "name": "${localWorkspaceFolderBasename}",
+    "name": "${localWorkspaceFolderBasename}-dev",
     "build": {
-        "dockerfile": "Containerfile",
-        "context": "..",
+        "dockerfile": "base/Containerfile",
+        "context": "base",
         "target": "project"
     },
     "remoteUser": "developer",
@@ -21,6 +21,9 @@
     ],
     "customizations": {
         "vscode": {
+            "settings": {
+                "markdownlint.run": "onSave"
+            },
             "extensions": [
                 "davidanson.vscode-markdownlint"
             ]

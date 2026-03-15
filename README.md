@@ -23,4 +23,6 @@ Each image build script ensures a local registry is running at `localhost:5000`,
 
 Use the matching `devcontainer.json` from a consuming repository.
 
+For work on this repository itself, use the root [`.devcontainer/devcontainer.json`](./.devcontainer/devcontainer.json). Its build assets live under [`.devcontainer/base`](./.devcontainer/base), and the container includes the VS Code Markdown lint extension plus the `markdownlint-cli2` command.
+
 `mssql-dev` is separate from the devcontainer flow. See [mssql-dev/README.md](./mssql-dev/README.md).
