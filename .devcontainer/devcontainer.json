@@ -1,10 +1,6 @@
 {
     "name": "${localWorkspaceFolderBasename}-dev",
-    "build": {
-        "dockerfile": "base/Containerfile",
-        "context": "base",
-        "target": "project"
-    },
+    "image": "localhost:5000/dev-base:1.0.4",
     "remoteUser": "developer",
     "containerUser": "developer",
     "updateRemoteUserUID": true,
@@ -15,9 +11,15 @@
     ],
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    "containerEnv": {
+        "CONTAINER_HOST": "unix:///run/user-host/podman/podman.sock",
+        "DOCKER_HOST": "unix:///run/user-host/podman/podman.sock"
+    },
     "mounts": [
         // ~/my/kb
-        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb"
+        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
+        // podman
+        "type=bind,source=${localEnv:XDG_RUNTIME_DIR},target=/run/user-host"
     ],
     "customizations": {
         "vscode": {

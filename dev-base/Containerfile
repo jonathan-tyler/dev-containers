@@ -17,11 +17,11 @@ RUN apt-get update \
     lsof \
     openssh-client \
     poppler-utils \
+    tesseract-ocr \
     pkg-config \
     procps \
     ripgrep \
     sqlite3 \
-    tesseract-ocr \
     tree \
     unzip \
     vim \
@@ -82,5 +82,19 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 FROM shell AS project
+
+USER ${USERNAME}
+
+FROM project AS repo-project
+
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    nodejs \
+    npm \
+    && npm install --global markdownlint-cli2 \
+    && npm cache clean --force \
+    && rm -rf /var/lib/apt/lists/*
 
 USER ${USERNAME}

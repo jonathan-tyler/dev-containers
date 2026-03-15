@@ -12,17 +12,20 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 
 ## Usage
 
-Each image build script ensures a local registry is running at `localhost:5000`, builds the image, tags it, and pushes it there.
+Image builds are orchestrated by a single Podman-native build graph in `images.manifest`, driven by `./build-images.sh`. It will inspect git changes, rebuild the affected images, rebuild dependent children automatically, push both `latest` and a semver tag, and update any tracked `devcontainer.json` image references.
+
+The script requires the `podman` CLI to be available on `PATH`.
 
 ```sh
-./dev-base/build.sh [tag]
-./golang-dev/build.sh [tag]
-./python-dev/build.sh [tag]
-./dotnet-dev/build.sh [tag]
+./build-images.sh --version 1.0.4
 ```
+
+Manifest dependencies use `image-name:BUILD_ARG_NAME` entries, so child `Containerfile` images can inherit parent version tags without hard-coded script logic.
+
+Default change detection maps git changes back to image contexts. A change inside an image directory selects that image, then the graph expands to required ancestors and dependent children. Changes to shared graph files like `images.manifest` or `build-images.sh` select all images. If there are no image-affecting changes, the script exits cleanly without building anything.
 
 Use the matching `devcontainer.json` from a consuming repository.
 
-For work on this repository itself, use the root [`.devcontainer/devcontainer.json`](./.devcontainer/devcontainer.json). Its build assets live under [`.devcontainer/base`](./.devcontainer/base), and the container includes the VS Code Markdown lint extension plus the `markdownlint-cli2` command.
+For work on this repository itself, use the root [`.devcontainer/devcontainer.json`](./.devcontainer/devcontainer.json). It now pulls the locally published [dev-base](./dev-base) image from the local registry, and `./build-images.sh` syncs that devcontainer reference to the current semver tag.
 
 `mssql-dev` is separate from the devcontainer flow. See [mssql-dev/README.md](./mssql-dev/README.md).
