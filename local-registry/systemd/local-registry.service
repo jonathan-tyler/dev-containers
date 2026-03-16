@@ -1,0 +1,13 @@
+[Unit]
+Description=Local container registry
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=__PODMAN_BIN__ start __REGISTRY_CONTAINER_NAME__
+ExecStop=__PODMAN_BIN__ stop --ignore -t 10 __REGISTRY_CONTAINER_NAME__
+
+[Install]
+WantedBy=default.target

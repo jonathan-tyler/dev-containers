@@ -1,0 +1,5 @@
+# name|context|containerfile|dependencies|devcontainer
+dev-base|dev-containers/dev-base|Containerfile||.devcontainer/devcontainer.json
+python-dev|dev-containers/python-dev|Containerfile|dev-base:DEV_BASE_TAG|dev-containers/python-dev/devcontainer.json
+golang-dev|dev-containers/golang-dev|Containerfile|dev-base:DEV_BASE_TAG|dev-containers/golang-dev/devcontainer.json
+dotnet-dev|dev-containers/dotnet-dev|Containerfile|dev-base:DEV_BASE_TAG|

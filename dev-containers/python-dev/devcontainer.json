@@ -1,6 +1,6 @@
 {
     "name": "${localWorkspaceFolderBasename}-dev",
-    "image": "localhost:5000/golang-dev:1.0.2",
+    "image": "127.0.0.1:5000/python-dev:1.0.4",
     "remoteUser": "developer",
     "containerUser": "developer",
     "updateRemoteUserUID": true,
@@ -14,16 +14,25 @@
     "mounts": [
         // ~/my/kb
         "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
-        // golang
-        "type=volume,source=golang-dev-cache,target=/home/developer/.cache",
-        "type=volume,source=golang-dev-go,target=/home/developer/go"
+        // python
+        "type=volume,source=python-pip-cache,target=/home/developer/.cache/pip"
     ],
     "customizations": {
         "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/bin/python3",
+                "python.analysis.typeCheckingMode": "basic",
+                "python.formatting.provider": "none",
+                "editor.formatOnSave": true,
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter"
+                }
+            },
             "extensions": [
                 "davidanson.vscode-markdownlint",
-                // golang
-                "golang.go"
+                "ms-python.python",
+                "ms-python.debugpy",
+                "ms-python.black-formatter"
             ]
         }
     }

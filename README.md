@@ -3,29 +3,25 @@
 Reusable Podman-based development container assets and one host-run SQL Server asset.
 
 ## Resources
-
-- 🧱 [dev-base](./dev-base): base image and local registry bootstrap.
-- 🐹 [golang-dev](./golang-dev): Go devcontainer image.
-- 🐍 [python-dev](./python-dev): Python devcontainer image.
-- 🔷 [dotnet-dev](./dotnet-dev): .NET devcontainer image.
-- 🗄️ [mssql-dev](./mssql-dev): host-managed SQL Server container.
+- 📦 [local-registry](./local-registry): local registry install and systemd bootstrap.
+- 🧱 [dev-containers/dev-base](./dev-containers/dev-base): base image and local registry bootstrap.
+- 🐹 [dev-containers/golang-dev](./dev-containers/golang-dev): Go devcontainer image.
+- 🐍 [dev-containers/python-dev](./dev-containers/python-dev): Python devcontainer image.
+- 🔷 [dev-containers/dotnet-dev](./dev-containers/dotnet-dev): .NET devcontainer image.
+- 🗄️ [sidecars/mssql-dev](./sidecars/mssql-dev): host-managed SQL Server container.
 
 ## Usage
 
-Image builds are orchestrated by a single Podman-native build graph in `images.manifest`, driven by `./build-images.sh`. It will inspect git changes, rebuild the affected images, rebuild dependent children automatically, push both `latest` and a semver tag, and update any tracked `devcontainer.json` image references.
+- To set up the local registry, run `./local-registry/install.sh`. It creates or starts the registry container and enables a lingering systemd user service so it comes back automatically.
+- To build and publish images, run `./local-registry/build-images.sh --version X.Y.Z`.
+- To reference a published image from a consuming repository, see the `devcontainer.json` examples in `./.devcontainer/devcontainer.json`, `./dev-containers/golang-dev/devcontainer.json`, and `./dev-containers/python-dev/devcontainer.json`.
 
-The script requires the `podman` CLI to be available on `PATH`.
+`mssql-dev` is separate from the devcontainer flow. See [sidecars/mssql-dev/README.md](./sidecars/mssql-dev/README.md).
 
-```sh
-./build-images.sh --version 1.0.4
-```
+## Troubleshooting
 
-Manifest dependencies use `image-name:BUILD_ARG_NAME` entries, so child `Containerfile` images can inherit parent version tags without hard-coded script logic.
+### Podman rewrites `localhost:5000` image references
 
-Default change detection maps git changes back to image contexts. A change inside an image directory selects that image, then the graph expands to required ancestors and dependent children. Changes to shared graph files like `images.manifest` or `build-images.sh` select all images. If there are no image-affecting changes, the script exits cleanly without building anything.
+If a `devcontainer.json` uses `localhost:5000/...` with `updateRemoteUserUID` enabled, Dev Containers can rewrite that image name to `localhost/localhost:5000/...` during the temporary UID-adjustment build. Podman then rejects the rewritten reference.
 
-Use the matching `devcontainer.json` from a consuming repository.
-
-For work on this repository itself, use the root [`.devcontainer/devcontainer.json`](./.devcontainer/devcontainer.json). It now pulls the locally published [dev-base](./dev-base) image from the local registry, and `./build-images.sh` syncs that devcontainer reference to the current semver tag.
-
-`mssql-dev` is separate from the devcontainer flow. See [mssql-dev/README.md](./mssql-dev/README.md).
+Use `127.0.0.1:5000/...` instead.

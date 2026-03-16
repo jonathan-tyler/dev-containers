@@ -1,10 +1,6 @@
 {
-    "name": "${localWorkspaceFolderBasename}",
-    "build": {
-        "dockerfile": "Containerfile",
-        "context": "..",
-        "target": "project"
-    },
+    "name": "${localWorkspaceFolderBasename}-dev",
+    "image": "127.0.0.1:5000/golang-dev:1.0.4",
     "remoteUser": "developer",
     "containerUser": "developer",
     "updateRemoteUserUID": true,
@@ -17,12 +13,17 @@
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
     "mounts": [
         // ~/my/kb
-        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb"
+        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
+        // golang
+        "type=volume,source=golang-dev-cache,target=/home/developer/.cache",
+        "type=volume,source=golang-dev-go,target=/home/developer/go"
     ],
     "customizations": {
         "vscode": {
             "extensions": [
-                "davidanson.vscode-markdownlint"
+                "davidanson.vscode-markdownlint",
+                // golang
+                "golang.go"
             ]
         }
     }

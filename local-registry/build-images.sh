@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MANIFEST_FILE="${ROOT_DIR}/images.manifest"
-REGISTRY_ADDRESS="${REGISTRY_ADDRESS:-localhost:5000}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+MANIFEST_FILE="${SCRIPT_DIR}/images.manifest"
+REGISTRY_ADDRESS="${REGISTRY_ADDRESS:-127.0.0.1:5000}"
 REGISTRY_TLS_VERIFY="${REGISTRY_TLS_VERIFY:-false}"
 SYNC_DEVCONTAINER=1
 INCLUDE_ANCESTORS=1
@@ -16,8 +17,8 @@ NO_SELECTION_MESSAGE=""
 
 declare -a CHANGED_FILES=()
 declare -a GLOBAL_TRIGGER_PATHS=(
-	"images.manifest"
-	"build-images.sh"
+	"local-registry/images.manifest"
+	"local-registry/build-images.sh"
 )
 
 declare -a IMAGE_ORDER=()
@@ -34,7 +35,7 @@ declare -A SELECTION_REASONS=()
 
 usage() {
 	cat <<'EOF'
-Usage: ./build-images.sh [options] [image ...]
+Usage: ./local-registry/build-images.sh [options] [image ...]
 
 Builds Podman images defined in images.manifest, pushes both latest and a version tag,
 and rebuilds dependent child images automatically. Running it with no arguments
@@ -42,7 +43,7 @@ uses git change detection and only rebuilds affected images.
 
 Options:
 	--version TAG            Use an explicit semver tag, for example 1.0.4.
-  --registry HOST:PORT     Override the registry address. Defaults to localhost:5000.
+	--registry HOST:PORT     Override the registry address. Defaults to 127.0.0.1:5000.
   --tls-verify true|false  Control podman push/pull TLS verification. Defaults to false.
 	--changed                Select images from staged, unstaged, and untracked git changes.
 	--changed-since REF      Select images changed since REF...HEAD, plus local working tree changes.
@@ -53,11 +54,11 @@ Options:
   --help                   Show this message.
 
 Examples:
-	./build-images.sh --version 1.0.4
-	./build-images.sh --version 1.0.4 dev-base
-	./build-images.sh --changed
-	./build-images.sh --changed-since origin/main
-	./build-images.sh --skip-descendants python-dev
+	./local-registry/build-images.sh --version 1.0.4
+	./local-registry/build-images.sh --version 1.0.4 dev-base
+	./local-registry/build-images.sh --changed
+	./local-registry/build-images.sh --changed-since origin/main
+	./local-registry/build-images.sh --skip-descendants python-dev
 EOF
 }
 
@@ -232,7 +233,7 @@ mark_with_descendants() {
 
 git_file_lines() {
 	local git_args=("$@")
-	git -C "$ROOT_DIR" "${git_args[@]}" | while IFS= read -r line; do
+	git -C "$REPO_ROOT" "${git_args[@]}" | while IFS= read -r line; do
 		printf '%s\0' "$line"
 	done
 }
@@ -251,7 +252,7 @@ collect_changed_files() {
 	local -a refs=()
 
 	if [[ -n "$CHANGED_SINCE_REF" ]]; then
-		git -C "$ROOT_DIR" rev-parse --verify "$CHANGED_SINCE_REF" >/dev/null 2>&1 || fail "Unknown git ref '$CHANGED_SINCE_REF'"
+		git -C "$REPO_ROOT" rev-parse --verify "$CHANGED_SINCE_REF" >/dev/null 2>&1 || fail "Unknown git ref '$CHANGED_SINCE_REF'"
 		while IFS= read -r -d '' changed_file; do
 			add_changed_file "$changed_file"
 		done < <(git_file_lines diff --name-only --diff-filter=ACMR "$CHANGED_SINCE_REF...HEAD")
@@ -364,14 +365,14 @@ prepare_build_context() {
 	case "$image_name" in
 		dev-base)
 			if [[ -f "${HOME}/.config/starship.toml" ]]; then
-				cp -f "${HOME}/.config/starship.toml" "${ROOT_DIR}/dev-base/.starship.toml"
+				cp -f "${HOME}/.config/starship.toml" "${REPO_ROOT}/dev-containers/dev-base/.starship.toml"
 			fi
 			;;
 	esac
 }
 
 ensure_registry() {
-	local registry_script="${ROOT_DIR}/dev-base/setup-local-registry.sh"
+	local registry_script="${REPO_ROOT}/local-registry/scripts/start-container.sh"
 	[[ -x "$registry_script" ]] || fail "Registry setup script not executable: $registry_script"
 	REGISTRY_ADDRESS="$REGISTRY_ADDRESS" "$registry_script"
 }
@@ -391,11 +392,11 @@ sync_devcontainer_image() {
 
 	devcontainer_path="${IMAGE_DEVCONTAINER[$image_name]}"
 	[[ -n "$devcontainer_path" ]] || return 0
-	devcontainer_path="${ROOT_DIR}/${devcontainer_path}"
+	devcontainer_path="${REPO_ROOT}/${devcontainer_path}"
 	[[ -f "$devcontainer_path" ]] || fail "Devcontainer file not found: $devcontainer_path"
 
 	perl -0pi -e 's|"image"\s*:\s*"[^"]+"|"image": "'"$version_ref"'"|' "$devcontainer_path"
-	log "Updated ${devcontainer_path#${ROOT_DIR}/} -> $version_ref"
+	log "Updated ${devcontainer_path#${REPO_ROOT}/} -> $version_ref"
 }
 
 build_image() {
@@ -404,7 +405,7 @@ build_image() {
 	local dependency_name dependency_arg dependency_tag
 	local -a build_args=()
 
-	context_dir="${ROOT_DIR}/${IMAGE_CONTEXT[$image_name]}"
+	context_dir="${REPO_ROOT}/${IMAGE_CONTEXT[$image_name]}"
 	containerfile_path="${context_dir}/${IMAGE_CONTAINERFILE[$image_name]}"
 	local_ref="${image_name}:latest"
 	latest_ref="$(registry_ref "$image_name" latest)"
@@ -416,6 +417,7 @@ build_image() {
 
 	dependency_list="${IMAGE_DEPENDENCIES[$image_name]}"
 	if [[ -n "$dependency_list" ]]; then
+		build_args+=(--build-arg "REGISTRY_ADDRESS=${REGISTRY_ADDRESS}")
 		IFS=',' read -r -a dependency_array <<< "$dependency_list"
 		for dependency in "${dependency_array[@]}"; do
 			[[ -n "$dependency" ]] || continue
