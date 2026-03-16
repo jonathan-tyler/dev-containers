@@ -20,7 +20,7 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 
 ## Troubleshooting
 
-### Podman rewrites `localhost:5000` image references
+### VS Code rewrites `localhost:5000` image references
 
 If a `devcontainer.json` uses `localhost:5000/...` with `updateRemoteUserUID` enabled, Dev Containers can rewrite that image name to `localhost/localhost:5000/...` during the temporary UID-adjustment build. Podman then rejects the rewritten reference.
 
