@@ -18,6 +18,10 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 
 `mssql-dev` is separate from the devcontainer flow. See [sidecars/mssql-dev/README.md](./sidecars/mssql-dev/README.md).
 
+## Notes
+
+- The workspace dev container mounts the host Podman socket so image build and container registry tasks can run inside a more isolated tooling environment, with the understanding that this weakens the isolation a devcontainer would normally provide. This is a repo-specific convenience, not a recommended general pattern.
+
 ## Troubleshooting
 
 ### VS Code rewrites `localhost:5000` image references
