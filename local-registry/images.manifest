@@ -1,5 +1,8 @@
 # name|context|containerfile|dependencies|devcontainer
 dev-base|dev-containers/dev-base|Containerfile||.devcontainer/devcontainer.json
-python-dev|dev-containers/python-dev|Containerfile|dev-base:DEV_BASE_TAG|dev-containers/python-dev/devcontainer.json
-golang-dev|dev-containers/golang-dev|Containerfile|dev-base:DEV_BASE_TAG|dev-containers/golang-dev/devcontainer.json
-dotnet-dev|dev-containers/dotnet-dev|Containerfile|dev-base:DEV_BASE_TAG|
+python-dev|dev-containers|python-dev/Containerfile|dev-base:DEV_BASE_TAG|dev-containers/python-dev/devcontainer.json
+golang-dev|dev-containers|golang-dev/Containerfile|dev-base:DEV_BASE_TAG|dev-containers/golang-dev/devcontainer.json
+dotnet-dev|dev-containers|dotnet-dev/Containerfile|dev-base:DEV_BASE_TAG|
+nodejs-dev|dev-containers|nodejs-dev/Containerfile|dev-base:DEV_BASE_TAG|dev-containers/nodejs-dev/devcontainer.json
+typescript-dev|dev-containers|typescript-dev/Containerfile|nodejs-dev:NODEJS_DEV_TAG|dev-containers/typescript-dev/devcontainer.json
+monolith-dev|dev-containers|monolith-dev/Containerfile|dev-base:DEV_BASE_TAG|dev-containers/monolith-dev/devcontainer.json

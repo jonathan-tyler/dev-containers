@@ -18,6 +18,8 @@ ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
 ENV NUGET_CLI_TELEMETRY_OPTOUT=1
 ENV POWERSHELL_TELEMETRY_OPTOUT=1
 
+COPY scripts/toolchains/install-dotnet.sh /tmp/install-dotnet.sh
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     python3 \
@@ -36,39 +38,17 @@ RUN python3 -m pip install --no-cache-dir --break-system-packages \
     Pillow \
     pytesseract
 
-RUN mkdir -p /usr/local/bin /usr/share/dotnet /tmp/dotnet-install \
-    && install -d -m 0755 /home/${USERNAME}/.local \
-    && install -d -m 0755 /home/${USERNAME}/.local/share \
-    && install -d -m 0755 /home/${USERNAME}/.local/share/NuGet \
+RUN curl -fsSL https://aka.ms/install-artifacts-credprovider.sh -o /tmp/install-artifacts-credprovider.sh \
+    && chmod +x /tmp/install-dotnet.sh /tmp/install-artifacts-credprovider.sh \
+    && /tmp/install-dotnet.sh \
     && install -d -m 0755 /home/${USERNAME}/.local/share/MicrosoftCredentialProvider \
     && install -d -m 0755 /home/${USERNAME}/.local/.IdentityService \
-    && install -d -m 0755 /home/${USERNAME}/.nuget \
-    && install -d -m 0755 /home/${USERNAME}/.nuget/NuGet \
-    && install -d -m 0755 /home/${USERNAME}/.nuget/packages \
-    && install -d -m 0755 /home/${USERNAME}/.nuget/http-cache \
-    && install -d -m 0755 /home/${USERNAME}/.nuget/plugins-cache \
     && install -d -m 0755 /home/${USERNAME}/.nuget/share \
-    && install -d -m 0755 /home/${USERNAME}/.microsoft \
-    && install -d -m 0755 /home/${USERNAME}/.microsoft/usersecrets \
-    && curl -fsSL https://dot.net/v1/dotnet-install.sh -o /tmp/dotnet-install/dotnet-install.sh \
-    && curl -fsSL https://aka.ms/install-artifacts-credprovider.sh -o /tmp/dotnet-install/install-artifacts-credprovider.sh \
-    && chmod +x /tmp/dotnet-install/dotnet-install.sh \
-    && chmod +x /tmp/dotnet-install/install-artifacts-credprovider.sh \
-    && /tmp/dotnet-install/dotnet-install.sh --channel 8.0 --quality ga --install-dir /usr/share/dotnet \
-    && /tmp/dotnet-install/dotnet-install.sh --channel 9.0 --quality ga --install-dir /usr/share/dotnet \
-    && /tmp/dotnet-install/dotnet-install.sh --channel 10.0 --quality ga --install-dir /usr/share/dotnet \
-    && HOME=/home/${USERNAME} /tmp/dotnet-install/install-artifacts-credprovider.sh \
-    && ln -sf /usr/share/dotnet/dotnet /usr/local/bin/dotnet \
-    && dotnet --list-sdks \
-    && cd /home/${USERNAME} \
-    && mkdir -p ./.config \
-    && if [ ! -f ./.config/dotnet-tools.json ]; then dotnet new tool-manifest --output ./.config; fi \
-    && if ! dotnet tool list --local | awk 'NR>2 { print $1 }' | grep -qx "csharpier"; then dotnet tool install csharpier --local; fi \
-    && dotnet tool list --local \
-    && if [ -d /home/${USERNAME}/.local ]; then chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local; fi \
-    && if [ -d /home/${USERNAME}/.nuget ]; then chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nuget; fi \
-    && if [ -d /home/${USERNAME}/.microsoft ]; then chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.microsoft; fi \
-    && rm -rf /tmp/dotnet-install
+    && HOME=/home/${USERNAME} /tmp/install-artifacts-credprovider.sh \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.nuget \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.microsoft \
+    && rm -f /tmp/install-dotnet.sh /tmp/install-artifacts-credprovider.sh
 
 FROM dotnet-dev AS project
 

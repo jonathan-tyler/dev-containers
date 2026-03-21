@@ -5,8 +5,11 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 ## Resources
 - 📦 [local-registry](./local-registry): local registry install and systemd bootstrap.
 - 🧱 [dev-containers/dev-base](./dev-containers/dev-base): base image and local registry bootstrap.
+- 🛠️ [dev-containers/monolith-dev](./dev-containers/monolith-dev): polyglot devcontainer image for mixed workspace development.
 - 🐹 [dev-containers/golang-dev](./dev-containers/golang-dev): Go devcontainer image.
+- 🟢 [dev-containers/nodejs-dev](./dev-containers/nodejs-dev): Node.js devcontainer image.
 - 🐍 [dev-containers/python-dev](./dev-containers/python-dev): Python devcontainer image.
+- 🔷 [dev-containers/typescript-dev](./dev-containers/typescript-dev): TypeScript devcontainer image layered on Node.js.
 - 🔷 [dev-containers/dotnet-dev](./dev-containers/dotnet-dev): .NET devcontainer image.
 - 🗄️ [sidecars/mssql-dev](./sidecars/mssql-dev): host-managed SQL Server container.
 
@@ -14,7 +17,13 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 
 - To set up the local registry, run `./local-registry/install.sh`. It creates or starts the registry container and enables a lingering systemd user service so it comes back automatically.
 - To build and publish images, run `./local-registry/build-images.sh --version X.Y.Z`.
-- To reference a published image from a consuming repository, see the `devcontainer.json` examples in `./.devcontainer/devcontainer.json`, `./dev-containers/golang-dev/devcontainer.json`, and `./dev-containers/python-dev/devcontainer.json`.
+- To reference a published image from a consuming repository, see the `devcontainer.json` examples in `./.devcontainer/devcontainer.json`, `./dev-containers/monolith-dev/devcontainer.json`, `./dev-containers/golang-dev/devcontainer.json`, `./dev-containers/nodejs-dev/devcontainer.json`, `./dev-containers/python-dev/devcontainer.json`, and `./dev-containers/typescript-dev/devcontainer.json`.
+
+## Shared Toolchains
+
+- Reusable toolchain installers live under `./dev-containers/scripts/toolchains`.
+- Focused images and `monolith-dev` both consume these scripts so version pins and install behavior stay aligned.
+- Keep image-specific policy in the image `Containerfile`; keep toolchain installation details in the shared scripts.
 
 `mssql-dev` is separate from the devcontainer flow. See [sidecars/mssql-dev/README.md](./sidecars/mssql-dev/README.md).
 

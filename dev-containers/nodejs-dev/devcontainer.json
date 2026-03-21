@@ -1,9 +1,6 @@
 {
     "name": "${localWorkspaceFolderBasename}-dev",
-    "build": {
-        "dockerfile": "base/Containerfile",
-        "context": "."
-    },
+    "image": "127.0.0.1:5000/nodejs-dev:1.0.4",
     "remoteUser": "developer",
     "containerUser": "developer",
     "updateRemoteUserUID": true,
@@ -14,23 +11,18 @@
     ],
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
     "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
-    "containerEnv": {
-        "CONTAINER_HOST": "unix:///run/user-host/podman/podman.sock",
-        "DOCKER_HOST": "unix:///run/user-host/podman/podman.sock"
-    },
     "mounts": [
         // ~/my/kb
         "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
-        // podman
-        "type=bind,source=${localEnv:XDG_RUNTIME_DIR},target=/run/user-host"
+        // pnpm
+        "type=volume,source=nodejs-pnpm-store,target=/home/developer/.local/share/pnpm/store"
     ],
     "customizations": {
         "vscode": {
-            "settings": {
-                "markdownlint.run": "onSave"
-            },
             "extensions": [
-                "davidanson.vscode-markdownlint"
+                "davidanson.vscode-markdownlint",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode"
             ]
         }
     }

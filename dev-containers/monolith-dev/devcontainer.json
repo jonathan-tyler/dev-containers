@@ -1,0 +1,44 @@
+{
+    "name": "${localWorkspaceFolderBasename}-dev",
+    "image": "127.0.0.1:5000/monolith-dev:1.0.4",
+    "remoteUser": "developer",
+    "containerUser": "developer",
+    "updateRemoteUserUID": true,
+    "runArgs": [
+        "--name=${localWorkspaceFolderBasename}-dev",
+        "--userns=keep-id",
+        "--security-opt=no-new-privileges"
+    ],
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/${localWorkspaceFolderBasename},type=bind,consistency=cached",
+    "mounts": [
+        "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
+        "type=volume,source=monolith-dev-pnpm-store,target=/home/developer/.local/share/pnpm/store",
+        "type=volume,source=monolith-dev-pip-cache,target=/home/developer/.cache/pip",
+        "type=volume,source=monolith-dev-go,target=/home/developer/go",
+        "type=volume,source=monolith-dev-nuget,target=/home/developer/.nuget/packages"
+    ],
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true,
+                "python.defaultInterpreterPath": "/usr/bin/python3",
+                "python.analysis.typeCheckingMode": "basic",
+                "python.formatting.provider": "none",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter"
+                }
+            },
+            "extensions": [
+                "davidanson.vscode-markdownlint",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+                "golang.go",
+                "ms-dotnettools.csharp",
+                "ms-python.black-formatter",
+                "ms-python.debugpy",
+                "ms-python.python"
+            ]
+        }
+    }
+}

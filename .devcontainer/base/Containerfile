@@ -1,41 +1,12 @@
-FROM debian:trixie-slim AS project
-
-ARG USERNAME=developer
-ARG USER_UID=1000
-ARG USER_GID=1000
+FROM 127.0.0.1:5000/dev-base:1.0.4 AS project
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+USER root
+
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    git \
-    jq \
-    less \
-    nodejs \
-    npm \
-    passwd \
-    procps \
-    ripgrep \
-    tree \
-    vim \
-    zsh \
-    && npm install --global markdownlint-cli2 \
-    && npm cache clean --force \
-    && if ! id -u ${USERNAME} >/dev/null 2>&1; then \
-    groupadd --gid ${USER_GID} ${USERNAME} && \
-    useradd --uid ${USER_UID} --gid ${USER_GID} -m --shell /usr/bin/zsh ${USERNAME}; \
-    fi \
-    && git config --system core.editor vim \
-    && install -d -m 0755 /workspaces \
-    && install -d -m 0755 /home/${USERNAME}/.cache \
-    && install -d -m 0755 /home/${USERNAME}/.config \
-    && install -d -m 0755 /home/${USERNAME}/.vscode-server/data/Machine \
-    && chown -R ${USERNAME}:${USERNAME} /workspaces \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.cache \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.config \
-    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.vscode-server \
+    podman \
     && rm -rf /var/lib/apt/lists/*
 
-USER ${USERNAME}
+USER developer
