@@ -5,6 +5,7 @@ USERNAME="${USERNAME:-developer}"
 
 apt-get update
 apt-get install -y --no-install-recommends \
+	fzf \
 	gh \
 	git \
 	jq \
@@ -14,12 +15,14 @@ apt-get install -y --no-install-recommends \
 	poppler-utils \
 	procps \
 	ripgrep \
+	rsync \
 	sqlite3 \
 	tesseract-ocr \
 	tree \
 	unzip \
 	vim \
-	zip
+	zip \
+	zoxide
 
 curl -fsSL https://gh.io/copilot-install | bash
 

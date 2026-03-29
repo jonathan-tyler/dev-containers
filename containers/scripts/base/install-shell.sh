@@ -25,6 +25,7 @@ printf '%s\n' \
 	'    source "$_vscode_zsh_integration_path"' \
 	'  fi' \
 	'fi' \
+	'if command -v zoxide >/dev/null 2>&1; then eval "$(zoxide init zsh)"; fi' \
 	'if [ -f "$HOME/.config/starship.toml" ]; then export STARSHIP_CONFIG="$HOME/.config/starship.toml"; fi' \
 	'if command -v starship >/dev/null 2>&1; then eval "$(starship init zsh)"; fi' \
 	> "/home/${USERNAME}/.zshrc"
