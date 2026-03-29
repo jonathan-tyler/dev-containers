@@ -5,6 +5,7 @@ USERNAME="${USERNAME:-developer}"
 
 apt-get update
 apt-get install -y --no-install-recommends \
+	gh \
 	git \
 	jq \
 	less \
@@ -19,6 +20,8 @@ apt-get install -y --no-install-recommends \
 	unzip \
 	vim \
 	zip
+
+curl -fsSL https://gh.io/copilot-install | bash
 
 git config --system core.editor vim
 
