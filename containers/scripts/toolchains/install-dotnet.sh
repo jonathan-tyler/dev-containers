@@ -6,7 +6,9 @@ USER_UID="${USER_UID:-1000}"
 USER_GID="${USER_GID:-1000}"
 
 apt-get update
-apt-get install -y --no-install-recommends curl
+apt-get install -y --no-install-recommends \
+	curl \
+	libicu76
 rm -rf /var/lib/apt/lists/*
 
 mkdir -p /usr/local/bin /usr/share/dotnet /tmp/dotnet-install

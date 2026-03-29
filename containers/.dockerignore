@@ -1,0 +1,14 @@
+**/.DS_Store
+**/*.swp
+**/*.tmp
+**/*~
+
+**/.git
+**/.gitignore
+
+**/devcontainer.json
+
+node_modules
+dist
+build
+coverage

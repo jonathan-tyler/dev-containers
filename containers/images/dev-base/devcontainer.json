@@ -2,7 +2,7 @@
     "name": "${localWorkspaceFolderBasename}-dev",
     "build": {
         "dockerfile": "Containerfile",
-        "context": "..",
+        "context": "../..",
         "target": "project"
     },
     "remoteUser": "developer",

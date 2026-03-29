@@ -1,4 +1,4 @@
-FROM 127.0.0.1:5000/dev-base:1.0.4 AS project
+FROM 127.0.0.1:5000/dev-base:latest AS project
 
 ENV DEBIAN_FRONTEND=noninteractive
 

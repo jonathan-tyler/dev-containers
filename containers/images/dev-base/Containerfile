@@ -1,0 +1,41 @@
+FROM dhi.io/debian-base:trixie-debian13-dev AS core
+
+ARG USERNAME=developer
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+COPY scripts/base/install-foundation.sh /tmp/install-foundation.sh
+
+RUN chmod +x /tmp/install-foundation.sh \
+    && USERNAME=${USERNAME} USER_UID=${USER_UID} USER_GID=${USER_GID} /tmp/install-foundation.sh \
+    && rm -f /tmp/install-foundation.sh
+
+FROM core AS shell
+
+COPY scripts/base/install-packages.sh /tmp/install-packages.sh
+COPY --chown=${USERNAME}:${USERNAME} images/dev-base/.zsh_history /home/${USERNAME}/.zsh_history
+COPY --chown=${USERNAME}:${USERNAME} images/dev-base/.starship.toml /home/${USERNAME}/.config/starship.toml
+COPY scripts/base/install-shell.sh /tmp/install-shell.sh
+
+RUN chmod +x /tmp/install-packages.sh /tmp/install-shell.sh \
+    && USERNAME=${USERNAME} /tmp/install-packages.sh \
+    && USERNAME=${USERNAME} /tmp/install-shell.sh \
+    && rm -f /tmp/install-packages.sh /tmp/install-shell.sh
+
+FROM shell AS project
+
+USER ${USERNAME}
+
+FROM project AS repo-project
+
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    nodejs \
+    npm \
+    && npm install --global markdownlint-cli2 \
+    && npm cache clean --force \
+    && rm -rf /var/lib/apt/lists/*
+
+USER ${USERNAME}

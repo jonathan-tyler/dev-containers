@@ -21,6 +21,7 @@ esac
 
 curl -fsSL "https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${node_arch}.tar.xz" -o /tmp/node.tar.xz
 rm -rf /usr/local/node
+install -d -m 0755 /usr/local/bin
 mkdir -p /usr/local/node
 install -d -m 0755 "$PNPM_HOME"
 install -d -m 0755 /home/${USERNAME}/.local/share/pnpm/store

@@ -22,7 +22,7 @@
         // ~/my/kb
         "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
         // podman
-        "type=bind,source=${localEnv:XDG_RUNTIME_DIR},target=/run/user-host"
+        "type=bind,source=${localEnv:XDG_RUNTIME_DIR}/podman/podman.sock,target=/run/user-host/podman/podman.sock"
     ],
     "customizations": {
         "vscode": {

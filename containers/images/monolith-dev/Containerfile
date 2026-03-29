@@ -1,0 +1,70 @@
+FROM dhi.io/debian-base:trixie-debian13-dev AS base
+
+ARG USERNAME=developer
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+FROM base AS monolith-dev
+
+USER root
+
+ENV PNPM_HOME=/home/${USERNAME}/.local/share/pnpm
+ENV GOBIN=/usr/local/bin
+ENV GOTOOLCHAIN=local
+ENV DOTNET_ROOT=/usr/share/dotnet
+ENV PATH=/usr/local/node/bin:${PNPM_HOME}:/usr/local/go/bin:${DOTNET_ROOT}:${DOTNET_ROOT}/tools:${PATH}
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ENV DOTNET_NOLOGO=1
+ENV DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1
+ENV NUGET_CLI_TELEMETRY_OPTOUT=1
+
+COPY scripts/base/install-foundation.sh /tmp/install-foundation.sh
+RUN chmod +x /tmp/install-foundation.sh \
+    && USERNAME=${USERNAME} USER_UID=${USER_UID} USER_GID=${USER_GID} /tmp/install-foundation.sh \
+    && rm -f /tmp/install-foundation.sh
+
+# Node.js
+COPY scripts/toolchains/install-nodejs.sh /tmp/install-nodejs.sh
+RUN chmod +x /tmp/install-nodejs.sh \
+    && USERNAME=${USERNAME} /tmp/install-nodejs.sh \
+    && rm -f /tmp/install-nodejs.sh
+
+# TypeScript
+COPY scripts/toolchains/install-typescript.sh /tmp/install-typescript.sh
+RUN chmod +x /tmp/install-typescript.sh \
+    && USERNAME=${USERNAME} /tmp/install-typescript.sh \
+    && rm -f /tmp/install-typescript.sh
+
+# Python
+COPY scripts/toolchains/install-python.sh /tmp/install-python.sh
+RUN chmod +x /tmp/install-python.sh \
+    && USERNAME=${USERNAME} /tmp/install-python.sh \
+    && rm -f /tmp/install-python.sh
+
+# Golang
+COPY scripts/toolchains/install-golang.sh /tmp/install-golang.sh
+RUN chmod +x /tmp/install-golang.sh \
+    && USERNAME=${USERNAME} /tmp/install-golang.sh \
+    && rm -f /tmp/install-golang.sh
+
+# Dotnet
+COPY scripts/toolchains/install-dotnet.sh /tmp/install-dotnet.sh
+RUN chmod +x /tmp/install-dotnet.sh \
+    && USERNAME=${USERNAME} USER_UID=${USER_UID} USER_GID=${USER_GID} /tmp/install-dotnet.sh \
+    && rm -f /tmp/install-dotnet.sh
+
+COPY scripts/base/install-packages.sh /tmp/install-packages.sh
+RUN chmod +x /tmp/install-packages.sh \
+    && USERNAME=${USERNAME} /tmp/install-packages.sh \
+    && rm -f /tmp/install-packages.sh
+
+COPY --chown=${USERNAME}:${USERNAME} images/dev-base/.zsh_history /home/${USERNAME}/.zsh_history
+COPY --chown=${USERNAME}:${USERNAME} images/dev-base/.starship.toml /home/${USERNAME}/.config/starship.toml
+COPY scripts/base/install-shell.sh /tmp/install-shell.sh
+RUN chmod +x /tmp/install-shell.sh \
+    && USERNAME=${USERNAME} /tmp/install-shell.sh \
+    && rm -f /tmp/install-shell.sh
+
+FROM monolith-dev AS project
+
+USER ${USERNAME}

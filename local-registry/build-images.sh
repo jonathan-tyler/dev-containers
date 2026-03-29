@@ -363,9 +363,9 @@ prepare_build_context() {
 	local image_name="$1"
 
 	case "$image_name" in
-		dev-base)
+		dev-base|monolith-dev)
 			if [[ -f "${HOME}/.config/starship.toml" ]]; then
-				cp -f "${HOME}/.config/starship.toml" "${REPO_ROOT}/dev-containers/dev-base/.starship.toml"
+				cp -f "${HOME}/.config/starship.toml" "${REPO_ROOT}/containers/images/dev-base/.starship.toml"
 			fi
 			;;
 	esac
