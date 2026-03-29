@@ -6,7 +6,7 @@ ARG USERNAME=developer
 ARG USER_UID=1000
 ARG USER_GID=1000
 
-FROM base AS nodejs-dev
+FROM base AS javascript-dev
 
 USER root
 
@@ -19,6 +19,6 @@ RUN chmod +x /tmp/install-nodejs.sh \
     && /tmp/install-nodejs.sh \
     && rm -f /tmp/install-nodejs.sh
 
-FROM nodejs-dev AS project
+FROM javascript-dev AS project
 
 USER ${USERNAME}

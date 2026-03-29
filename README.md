@@ -7,9 +7,9 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 - 🧱 [dev-base](./containers/images/dev-base): base image and local registry bootstrap.
 - 🛠️ [monolith-dev](./containers/images/monolith-dev): polyglot devcontainer image for mixed workspace development.
 - 🐹 [golang-dev](./containers/images/golang-dev): Go devcontainer image.
-- 🟢 [nodejs-dev](./containers/images/nodejs-dev): Node.js devcontainer image.
+- 🟢 [javascript-dev](./containers/images/javascript-dev): JavaScript devcontainer image.
 - 🐍 [python-dev](./containers/images/python-dev): Python devcontainer image.
-- 🔷 [typescript-dev](./containers/images/typescript-dev): TypeScript devcontainer image layered on Node.js.
+- 🔷 [typescript-dev](./containers/images/typescript-dev): TypeScript devcontainer image layered on the JavaScript dev image.
 - 🔷 [dotnet-dev](./containers/images/dotnet-dev): .NET devcontainer image.
 - 🗄️ [sidecars/mssql-dev](./sidecars/mssql-dev): host-managed SQL Server container.
 - 📨 [sidecars/smtp4dev](./sidecars/smtp4dev): host-managed smtp4dev container.

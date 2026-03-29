@@ -1,6 +1,6 @@
 {
     "name": "${localWorkspaceFolderBasename}-dev",
-    "image": "127.0.0.1:5000/nodejs-dev:1.0.4",
+    "image": "127.0.0.1:5000/javascript-dev:1.0.4",
     "remoteUser": "developer",
     "containerUser": "developer",
     "updateRemoteUserUID": true,
@@ -15,7 +15,7 @@
         // ~/my/kb
         "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb",
         // pnpm
-        "type=volume,source=nodejs-pnpm-store,target=/home/developer/.local/share/pnpm/store"
+        "type=volume,source=javascript-pnpm-store,target=/home/developer/.local/share/pnpm/store"
     ],
     "customizations": {
         "vscode": {
