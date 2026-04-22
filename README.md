@@ -23,6 +23,7 @@ Reusable Podman-based development container assets and one host-run SQL Server a
 
 - Focused images and `monolith-dev` both consume these scripts so version pins and install behavior stay aligned.
 - Keep image-specific policy in the image `Containerfile`; keep toolchain installation details in the shared scripts.
+- Keep shared images generic: install tools and shell capability there, but apply personal dotfiles and prompt config at devcontainer runtime instead of baking host-specific files into image builds.
 
 `mssql-dev` and `smtp4dev` are separate from the devcontainer flow. See [sidecars/mssql-dev/README.md](./sidecars/mssql-dev/README.md) and [sidecars/smtp4dev/README.md](./sidecars/smtp4dev/README.md).
 

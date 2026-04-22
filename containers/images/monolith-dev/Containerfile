@@ -58,8 +58,6 @@ RUN chmod +x /tmp/install-tools.sh \
     && USERNAME=${USERNAME} /tmp/install-tools.sh \
     && rm -f /tmp/install-tools.sh
 
-COPY --chown=${USERNAME}:${USERNAME} images/dev-base/.zsh_history /home/${USERNAME}/.zsh_history
-COPY --chown=${USERNAME}:${USERNAME} images/dev-base/.starship.toml /home/${USERNAME}/.config/starship.toml
 COPY scripts/base/install-shell.sh /tmp/install-shell.sh
 RUN chmod +x /tmp/install-shell.sh \
     && USERNAME=${USERNAME} /tmp/install-shell.sh \

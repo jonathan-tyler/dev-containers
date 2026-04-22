@@ -18,6 +18,8 @@
         "type=volume,source=monolith-dev-go,target=/home/developer/go",
         "type=volume,source=monolith-dev-nuget,target=/home/developer/.nuget/packages"
     ],
+    "postCreateCommand": "bash /workspaces/${localWorkspaceFolderBasename}/containers/images/monolith-dev/post-create.sh",
+    "postStartCommand": "bash /workspaces/${localWorkspaceFolderBasename}/containers/images/monolith-dev/post-create.sh",
     "customizations": {
         "vscode": {
             "settings": {

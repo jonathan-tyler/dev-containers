@@ -361,14 +361,7 @@ selected_count() {
 
 prepare_build_context() {
 	local image_name="$1"
-
-	case "$image_name" in
-		dev-base|monolith-dev)
-			if [[ -f "${HOME}/.config/starship.toml" ]]; then
-				cp -f "${HOME}/.config/starship.toml" "${REPO_ROOT}/containers/images/dev-base/.starship.toml"
-			fi
-			;;
-	esac
+	: "$image_name"
 }
 
 ensure_registry() {

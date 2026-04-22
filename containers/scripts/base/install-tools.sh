@@ -5,6 +5,7 @@ USERNAME="${USERNAME:-developer}"
 
 apt-get update
 apt-get install -y --no-install-recommends \
+	ca-certificates \
 	fzf \
 	gh \
 	git \
@@ -25,6 +26,10 @@ apt-get install -y --no-install-recommends \
 	zoxide
 
 curl -fsSL https://gh.io/copilot-install | bash
+
+if ! command -v chezmoi >/dev/null 2>&1; then
+	sh -c "$(curl -fsLS get.chezmoi.io)" -- -b /usr/local/bin
+fi
 
 git config --system core.editor vim
 

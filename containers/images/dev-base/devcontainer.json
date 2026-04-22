@@ -19,6 +19,8 @@
         // ~/my/kb
         "type=bind,source=${localEnv:HOME}/my/kb,target=/home/developer/kb"
     ],
+    "postCreateCommand": "bash /workspaces/${localWorkspaceFolderBasename}/containers/images/dev-base/post-create.sh",
+    "postStartCommand": "bash /workspaces/${localWorkspaceFolderBasename}/containers/images/dev-base/post-create.sh",
     "customizations": {
         "vscode": {
             "extensions": [
